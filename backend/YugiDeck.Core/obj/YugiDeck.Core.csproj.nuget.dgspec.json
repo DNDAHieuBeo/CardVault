@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj": {}
+    "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj": {}
   },
   "projects": {
-    "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj": {
+    "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj",
+        "projectUniqueName": "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj",
         "projectName": "YugiDeck.Core",
-        "projectPath": "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj",
+        "projectPath": "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj",
         "packagesPath": "C:\\Users\\clcarlos\\.nuget\\packages\\",
-        "outputPath": "E:\\YugiDeck\\YugiDeck.Core\\obj\\",
+        "outputPath": "E:\\Yugi-App\\backend\\YugiDeck.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\clcarlos\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -3426,11 +3426,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\YugiDeck\\YugiDeck.Infrastructure\\YugiDeck.Infrastructure.csproj",
+      "projectUniqueName": "E:\\Yugi-App\\backend\\YugiDeck.Infrastructure\\YugiDeck.Infrastructure.csproj",
       "projectName": "YugiDeck.Infrastructure",
-      "projectPath": "E:\\YugiDeck\\YugiDeck.Infrastructure\\YugiDeck.Infrastructure.csproj",
+      "projectPath": "E:\\Yugi-App\\backend\\YugiDeck.Infrastructure\\YugiDeck.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\clcarlos\\.nuget\\packages\\",
-      "outputPath": "E:\\YugiDeck\\YugiDeck.Infrastructure\\obj\\",
+      "outputPath": "E:\\Yugi-App\\backend\\YugiDeck.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\clcarlos\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3446,8 +3446,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj": {
-              "projectPath": "E:\\YugiDeck\\YugiDeck.Core\\YugiDeck.Core.csproj"
+            "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj": {
+              "projectPath": "E:\\Yugi-App\\backend\\YugiDeck.Core\\YugiDeck.Core.csproj"
             }
           }
         }
