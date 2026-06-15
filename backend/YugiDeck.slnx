@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="YugiDeck.API/YugiDeck.API.csproj" />
+  <Project Path="YugiDeck.Core/YugiDeck.Core.csproj" />
+  <Project Path="YugiDeck.Infrastructure/YugiDeck.Infrastructure.csproj" />
+</Solution>
