@@ -1,0 +1,232 @@
+<div class="h-full overflow-y-auto" style="background-color: var(--color-bg)">
+  <div class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Setup phase -->
+    @if (!duel()) {
+      <div class="card-surface p-8 space-y-6">
+        <div class="text-center">
+          <h1 class="text-2xl font-bold" style="color: var(--color-text)">Start a Duel</h1>
+          <p class="text-sm mt-1" style="color: var(--color-text-muted)">Enter player names to begin</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">PLAYER 1</label>
+            <input [ngModel]="player1Name()" (ngModelChange)="player1Name.set($event)"
+                   class="input-base text-center font-semibold" placeholder="Player 1" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">PLAYER 2</label>
+            <input [ngModel]="player2Name()" (ngModelChange)="player2Name.set($event)"
+                   class="input-base text-center font-semibold" placeholder="Player 2" />
+          </div>
+        </div>
+
+        <button (click)="createDuel()" [disabled]="creating()"
+                class="btn-primary w-full py-3 flex items-center justify-center gap-2">
+          @if (creating()) {
+            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            Starting...
+          } @else {
+            ⚔️ Start Duel
+          }
+        </button>
+      </div>
+
+    } @else {
+      <!-- Active / Ended duel -->
+
+      <!-- Status bar -->
+      @if (duel()!.status === 'ended') {
+        <div class="text-center py-3 px-5 rounded-xl font-semibold text-lg"
+             style="background: linear-gradient(135deg, var(--color-primary), #5de8b5); color: #000">
+          Duel Ended
+        </div>
+      }
+
+      <!-- Player panels -->
+      <div class="grid grid-cols-2 gap-4">
+
+        <!-- Player 1 -->
+        <div class="card-surface p-5 space-y-3">
+          <div>
+            <p class="text-xs uppercase tracking-widest font-semibold" style="color: var(--color-text-muted)">Player 1</p>
+            <p class="text-lg font-bold truncate" style="color: var(--color-text)">{{ duel()!.player1Name }}</p>
+          </div>
+
+          <!-- LP bar -->
+          <div>
+            <div class="flex items-end gap-2 mb-1">
+              <span class="text-3xl font-black tabular-nums" [style.color]="lpColor(p1Pct())">
+                {{ duel()!.player1LP.toLocaleString() }}
+              </span>
+              <span class="text-xs mb-1" style="color: var(--color-text-muted)">LP</span>
+            </div>
+            <div class="h-2 rounded-full overflow-hidden" style="background-color: var(--color-surface-2)">
+              <div class="h-full rounded-full transition-all duration-500"
+                   [style.width.%]="p1Pct()" [style.background-color]="lpColor(p1Pct())"></div>
+            </div>
+          </div>
+
+          @if (duel()!.status === 'active') {
+            <!-- Quick buttons -->
+            <div class="grid grid-cols-3 gap-1 text-xs">
+              @for (delta of [-1000, -500, -100, 100, 500, 1000]; track delta) {
+                <button (click)="adjustLP(1, delta)"
+                        class="py-1.5 rounded font-medium transition-colors"
+                        [class]="delta < 0 ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' :
+                                             'bg-green-900/30 text-green-400 hover:bg-green-900/50'">
+                  {{ formatDelta(delta) }}
+                </button>
+              }
+            </div>
+            <!-- Custom LP -->
+            <div class="flex gap-2">
+              <input [ngModel]="customLP1()" (ngModelChange)="customLP1.set($event)"
+                     (keyup.enter)="applyCustomLP(1)"
+                     type="number" placeholder="Set LP" class="input-base text-sm flex-1 text-center" />
+              <button (click)="applyCustomLP(1)"
+                      class="px-3 py-1.5 text-xs font-medium rounded transition-colors"
+                      style="background-color: var(--color-surface-2); color: var(--color-text)">
+                Set
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Player 2 -->
+        <div class="card-surface p-5 space-y-3">
+          <div>
+            <p class="text-xs uppercase tracking-widest font-semibold" style="color: var(--color-text-muted)">Player 2</p>
+            <p class="text-lg font-bold truncate" style="color: var(--color-text)">{{ duel()!.player2Name }}</p>
+          </div>
+
+          <!-- LP bar -->
+          <div>
+            <div class="flex items-end gap-2 mb-1">
+              <span class="text-3xl font-black tabular-nums" [style.color]="lpColor(p2Pct())">
+                {{ duel()!.player2LP.toLocaleString() }}
+              </span>
+              <span class="text-xs mb-1" style="color: var(--color-text-muted)">LP</span>
+            </div>
+            <div class="h-2 rounded-full overflow-hidden" style="background-color: var(--color-surface-2)">
+              <div class="h-full rounded-full transition-all duration-500"
+                   [style.width.%]="p2Pct()" [style.background-color]="lpColor(p2Pct())"></div>
+            </div>
+          </div>
+
+          @if (duel()!.status === 'active') {
+            <!-- Quick buttons -->
+            <div class="grid grid-cols-3 gap-1 text-xs">
+              @for (delta of [-1000, -500, -100, 100, 500, 1000]; track delta) {
+                <button (click)="adjustLP(2, delta)"
+                        class="py-1.5 rounded font-medium transition-colors"
+                        [class]="delta < 0 ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' :
+                                             'bg-green-900/30 text-green-400 hover:bg-green-900/50'">
+                  {{ formatDelta(delta) }}
+                </button>
+              }
+            </div>
+            <!-- Custom LP -->
+            <div class="flex gap-2">
+              <input [ngModel]="customLP2()" (ngModelChange)="customLP2.set($event)"
+                     (keyup.enter)="applyCustomLP(2)"
+                     type="number" placeholder="Set LP" class="input-base text-sm flex-1 text-center" />
+              <button (click)="applyCustomLP(2)"
+                      class="px-3 py-1.5 text-xs font-medium rounded transition-colors"
+                      style="background-color: var(--color-surface-2); color: var(--color-text)">
+                Set
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Tools: Dice + Coin + End Duel -->
+      <div class="card-surface p-5 space-y-4">
+        <div class="flex flex-wrap gap-4 items-center">
+
+          <!-- Dice -->
+          <div class="flex items-center gap-3">
+            <button (click)="rollDice()" [disabled]="rollingDice()"
+                    class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors"
+                    style="background-color: var(--color-surface-2); color: var(--color-text)">
+              @if (rollingDice()) {
+                <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+              } @else {
+                🎲
+              }
+              Roll Dice
+            </button>
+            @if (diceResult() !== null) {
+              <span class="text-2xl font-black" style="color: var(--color-primary)">{{ diceResult() }}</span>
+            }
+          </div>
+
+          <!-- Coin -->
+          <div class="flex items-center gap-3">
+            <button (click)="flipCoin()" [disabled]="flippingCoin()"
+                    class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors"
+                    style="background-color: var(--color-surface-2); color: var(--color-text)">
+              @if (flippingCoin()) {
+                <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+              } @else {
+                🪙
+              }
+              Flip Coin
+            </button>
+            @if (coinResult()) {
+              <span class="text-lg font-bold" style="color: var(--color-primary)">{{ coinResult() }}</span>
+            }
+          </div>
+
+          <div class="flex-1"></div>
+
+          <!-- End / New duel -->
+          @if (duel()!.status === 'active') {
+            <button (click)="endDuel()" [disabled]="ending()"
+                    class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors">
+              {{ ending() ? 'Ending...' : 'End Duel' }}
+            </button>
+          } @else {
+            <button (click)="newDuel()"
+                    class="btn-primary px-4 py-2 text-sm">
+              New Duel
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- LP History -->
+      @if (history().length > 0) {
+        <div class="card-surface p-5">
+          <h3 class="text-sm font-bold mb-3" style="color: var(--color-text)">LP History</h3>
+          <div class="space-y-1 max-h-48 overflow-y-auto">
+            @for (entry of history(); track entry.timestamp) {
+              <div class="flex items-center gap-3 text-xs py-1 border-b last:border-0"
+                   style="border-color: var(--color-border)">
+                <span class="font-medium shrink-0" style="color: var(--color-text-muted)">
+                  {{ entry.playerNumber === 1 ? duel()!.player1Name : duel()!.player2Name }}
+                </span>
+                <span class="font-bold shrink-0"
+                      [style.color]="entry.delta < 0 ? '#f87171' : '#4ade80'">
+                  {{ formatDelta(entry.delta) }}
+                </span>
+                <span class="shrink-0" style="color: var(--color-text)">→ {{ entry.newValue.toLocaleString() }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

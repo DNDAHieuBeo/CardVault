@@ -291,7 +291,7 @@ Base URL (development): `https://localhost:7001/api`
   "refreshToken": "abc123...",
   "expiresIn": 3600,
   "userId": "guid",
-  "username": "hieuleo"
+  "username": "hieubeo"
 }
 ```
 

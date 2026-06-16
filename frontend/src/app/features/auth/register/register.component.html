@@ -22,8 +22,7 @@
     <!-- Logo -->
     <div class="text-center mb-8">
       <img src="/icons/CardVault_logo.svg" alt="CardVault" class="w-36 h-36 mx-auto mb-4 rounded-3xl" />
-      
-      <p class="text-sm" style="color: var(--color-text-muted)">Create a new account</p>
+
     </div>
 
     <!-- Card -->
@@ -52,7 +51,7 @@
             formControlName="username"
             class="input-base"
             [class.border-red-500]="isInvalid('username')"
-            placeholder="hieuleo"
+            placeholder="Enter your username"
             autocomplete="username"
           />
           @if (isInvalid('username')) {
@@ -87,7 +86,7 @@
               formControlName="password"
               class="input-base pr-10"
               [class.border-red-500]="isInvalid('password')"
-              placeholder="At least 8 characters"
+              placeholder="Enter your password"
               autocomplete="new-password"
             />
             <button type="button" (click)="showPassword.set(!showPassword())"
