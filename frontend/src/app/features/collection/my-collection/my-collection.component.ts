@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CollectionService } from '../../../core/services/collection.service';
 import { UserCard } from '../../../core/models/collection.model';
+import { isMonsterCard } from '../../../core/utils/card.utils';
 
 @Component({
   selector: 'app-my-collection',
@@ -63,6 +64,6 @@ export class MyCollectionComponent implements OnInit {
   }
 
   isMonster(type: string): boolean {
-    return type?.toLowerCase().includes('monster') ?? false;
+    return isMonsterCard(type);
   }
 }

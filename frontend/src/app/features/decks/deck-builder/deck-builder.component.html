@@ -114,17 +114,12 @@
 
         <!-- Browser pagination -->
         @if ((browserCards()?.totalPages ?? 0) > 1) {
-          <div class="flex items-center justify-between p-2 border-t text-xs" style="border-color: var(--color-border)">
-            <button (click)="searchCards(browserPage() - 1)" [disabled]="browserPage() === 1"
-                    class="px-2 py-1 rounded disabled:opacity-40" style="color: var(--color-text-muted)">
-              ←
-            </button>
-            <span style="color: var(--color-text-muted)">{{ browserPage() }} / {{ browserCards()!.totalPages }}</span>
-            <button (click)="searchCards(browserPage() + 1)"
-                    [disabled]="browserPage() === browserCards()!.totalPages"
-                    class="px-2 py-1 rounded disabled:opacity-40" style="color: var(--color-text-muted)">
-              →
-            </button>
+          <div class="p-2 border-t" style="border-color: var(--color-border)">
+            <app-pagination
+              [currentPage]="browserPage()"
+              [totalPages]="browserCards()!.totalPages"
+              (pageChange)="searchCards($event)"
+            />
           </div>
         }
       </div>

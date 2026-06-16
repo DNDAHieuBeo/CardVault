@@ -5,14 +5,13 @@ import { DeckService } from '../../../core/services/deck.service';
 import { CardService } from '../../../core/services/card.service';
 import { DeckDetail } from '../../../core/models/deck.model';
 import { Card, PagedResult } from '../../../core/models/card.model';
-
-const EXTRA_TYPES = ['fusion monster', 'synchro monster', 'xyz monster', 'link monster',
-  'synchro tuner monster', 'pendulum effect fusion monster'];
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { isExtraTypeCard } from '../../../core/utils/card.utils';
 
 @Component({
   selector: 'app-deck-builder',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PaginationComponent],
   templateUrl: './deck-builder.component.html',
 })
 export class DeckBuilderComponent implements OnInit {
@@ -77,7 +76,7 @@ export class DeckBuilderComponent implements OnInit {
   }
 
   isExtraType(card: Card): boolean {
-    return EXTRA_TYPES.some(t => card.type?.toLowerCase().includes(t));
+    return isExtraTypeCard(card.type);
   }
 
   countInDeck(card: Card): number {

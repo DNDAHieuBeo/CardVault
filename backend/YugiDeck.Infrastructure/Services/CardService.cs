@@ -20,19 +20,28 @@ public class CardService(
         var query = db.Cards.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.Name))
-            query = query.Where(c => c.Name.Contains(filter.Name));
+        {
+            var name = filter.Name.ToLower();
+            query = query.Where(c => c.Name.ToLower().Contains(name));
+        }
         if (!string.IsNullOrWhiteSpace(filter.Desc))
-            query = query.Where(c => c.Desc.Contains(filter.Desc));
+        {
+            var desc = filter.Desc.ToLower();
+            query = query.Where(c => c.Desc.ToLower().Contains(desc));
+        }
         if (!string.IsNullOrWhiteSpace(filter.Category))
-            query = query.Where(c => c.Type.Contains(filter.Category));
+        {
+            var category = filter.Category.ToLower();
+            query = query.Where(c => c.Type.ToLower().Contains(category));
+        }
         if (!string.IsNullOrWhiteSpace(filter.Type))
-            query = query.Where(c => c.Type == filter.Type);
+            query = query.Where(c => c.Type.ToLower() == filter.Type.ToLower());
         if (!string.IsNullOrWhiteSpace(filter.Race))
-            query = query.Where(c => c.Race == filter.Race);
+            query = query.Where(c => c.Race != null && c.Race.ToLower() == filter.Race.ToLower());
         if (!string.IsNullOrWhiteSpace(filter.Attribute))
-            query = query.Where(c => c.Attribute == filter.Attribute);
+            query = query.Where(c => c.Attribute != null && c.Attribute.ToLower() == filter.Attribute.ToLower());
         if (!string.IsNullOrWhiteSpace(filter.Archetype))
-            query = query.Where(c => c.Archetype == filter.Archetype);
+            query = query.Where(c => c.Archetype != null && c.Archetype.ToLower() == filter.Archetype.ToLower());
         if (filter.Level.HasValue)
             query = query.Where(c => c.Level == filter.Level);
         if (filter.MinAtk.HasValue)

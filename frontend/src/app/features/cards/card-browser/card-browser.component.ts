@@ -1,8 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardService } from '../../../core/services/card.service';
-import { CollectionService } from '../../../core/services/collection.service';
 import { Card, CardFilter, PagedResult } from '../../../core/models/card.model';
+import { CardThumbnailComponent } from '../../../shared/components/card-thumbnail/card-thumbnail.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { CardDetailPanelComponent } from '../../../shared/components/card-detail-panel/card-detail-panel.component';
 
 const MONSTER_RACES = [
   'Aqua', 'Beast', 'Beast-Warrior', 'Cyberse', 'Dinosaur', 'Divine-Beast',
@@ -39,12 +41,11 @@ const ORDER_OPTIONS = [
 @Component({
   selector: 'app-card-browser',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CardThumbnailComponent, PaginationComponent, CardDetailPanelComponent],
   templateUrl: './card-browser.component.html',
 })
 export class CardBrowserComponent implements OnInit {
   private readonly cardService = inject(CardService);
-  private readonly collectionService = inject(CollectionService);
 
   readonly attributes = ATTRIBUTES;
   readonly levels = LEVELS;
@@ -54,10 +55,9 @@ export class CardBrowserComponent implements OnInit {
   readonly spellTypes = SPELL_TYPES;
   readonly trapTypes = TRAP_TYPES;
 
-  // Filter state
   filterName = '';
   filterDesc = '';
-  filterCategory = '';    // Monster / Spell / Trap
+  filterCategory = '';
   filterType = '';
   filterRace = '';
   filterAttribute = '';
@@ -69,25 +69,11 @@ export class CardBrowserComponent implements OnInit {
   filterBan = '';
   filterOrder = 'name';
 
-  // Derived type/race lists based on category
-  get availableTypes(): string[] {
-    if (this.filterCategory === 'Monster') return MONSTER_TYPES;
-    if (this.filterCategory === 'Spell')   return SPELL_TYPES;
-    if (this.filterCategory === 'Trap')    return TRAP_TYPES;
-    return [...MONSTER_TYPES, ...SPELL_TYPES, ...TRAP_TYPES];
-  }
-
   get availableRaces(): string[] {
     if (this.filterCategory === 'Monster') return MONSTER_RACES;
     if (this.filterCategory === 'Spell')   return SPELL_RACES;
     if (this.filterCategory === 'Trap')    return TRAP_RACES;
-    return [...MONSTER_RACES, ...SPELL_RACES, ...TRAP_RACES].filter(
-      (v, i, a) => a.indexOf(v) === i
-    );
-  }
-
-  get showMonsterFilters(): boolean {
-    return !this.filterCategory || this.filterCategory === 'Monster';
+    return [...MONSTER_RACES, ...SPELL_RACES, ...TRAP_RACES].filter((v, i, a) => a.indexOf(v) === i);
   }
 
   result = signal<PagedResult<Card> | null>(null);
@@ -95,17 +81,13 @@ export class CardBrowserComponent implements OnInit {
   syncing = signal(false);
   syncMessage = signal('');
   currentPage = signal(1);
-
   selectedCard = signal<Card | null>(null);
-  addingToCollection = signal(false);
-  addSuccess = signal(false);
 
   ngOnInit(): void {
     this.loadCards();
   }
 
   onCategoryChange(): void {
-    // Reset dependent filters when category changes
     this.filterType = '';
     this.filterRace = '';
     if (this.filterCategory !== 'Monster') {
@@ -151,34 +133,17 @@ export class CardBrowserComponent implements OnInit {
       type:      this.filterType      || undefined,
       race:      this.filterRace      || undefined,
       attribute: this.filterAttribute || undefined,
-      level:     this.filterLevel     ? +this.filterLevel     : undefined,
-      minAtk:    this.filterMinAtk    ? +this.filterMinAtk    : undefined,
-      maxAtk:    this.filterMaxAtk    ? +this.filterMaxAtk    : undefined,
-      minDef:    this.filterMinDef    ? +this.filterMinDef    : undefined,
-      maxDef:    this.filterMaxDef    ? +this.filterMaxDef    : undefined,
+      level:     this.filterLevel     ? +this.filterLevel  : undefined,
+      minAtk:    this.filterMinAtk    ? +this.filterMinAtk : undefined,
+      maxAtk:    this.filterMaxAtk    ? +this.filterMaxAtk : undefined,
+      minDef:    this.filterMinDef    ? +this.filterMinDef : undefined,
+      maxDef:    this.filterMaxDef    ? +this.filterMaxDef : undefined,
       banTcg:    this.filterBan       || undefined,
       orderBy:   this.filterOrder     || undefined,
     };
     this.cardService.getCards(f).subscribe({
       next: r => { this.result.set(r); this.loading.set(false); },
-      error: () => this.loading.set(false)
-    });
-  }
-
-  openDetail(card: Card): void {
-    this.selectedCard.set(card);
-    this.addSuccess.set(false);
-  }
-
-  closeDetail(): void {
-    this.selectedCard.set(null);
-  }
-
-  addToCollection(card: Card): void {
-    this.addingToCollection.set(true);
-    this.collectionService.addCard({ cardId: card.id, quantity: 1 }).subscribe({
-      next: () => { this.addingToCollection.set(false); this.addSuccess.set(true); },
-      error: () => this.addingToCollection.set(false)
+      error: () => this.loading.set(false),
     });
   }
 
@@ -192,11 +157,7 @@ export class CardBrowserComponent implements OnInit {
         this.loadCards(1);
         setTimeout(() => this.syncMessage.set(''), 5000);
       },
-      error: () => { this.syncing.set(false); this.syncMessage.set('Sync failed.'); }
+      error: () => { this.syncing.set(false); this.syncMessage.set('Sync failed.'); },
     });
-  }
-
-  isMonster(card: Card): boolean {
-    return card.type?.toLowerCase().includes('monster') ?? false;
   }
 }
