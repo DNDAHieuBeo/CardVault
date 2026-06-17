@@ -50,9 +50,12 @@
             type="text"
             formControlName="username"
             class="input-base"
-                        placeholder="Enter your username"
+            placeholder="Enter your username"
             autocomplete="username"
           />
+          @if (isInvalid('username')) {
+            <p class="mt-1 text-xs text-red-500">Username must be 3–32 characters.</p>
+          }
         </div>
 
         <!-- Email -->
@@ -63,9 +66,12 @@
             type="email"
             formControlName="email"
             class="input-base"
-                        placeholder="you@example.com"
+            placeholder="you@example.com"
             autocomplete="email"
           />
+          @if (isInvalid('email')) {
+            <p class="mt-1 text-xs text-red-500">Please enter a valid email address.</p>
+          }
         </div>
 
         <!-- Password -->
@@ -77,7 +83,7 @@
               [type]="showPassword() ? 'text' : 'password'"
               formControlName="password"
               class="input-base pr-10"
-                            placeholder="Enter your password"
+              placeholder="At least 8 characters"
               autocomplete="new-password"
             />
             <button type="button" (click)="showPassword.set(!showPassword())"
@@ -96,6 +102,9 @@
               }
             </button>
           </div>
+          @if (isInvalid('password')) {
+            <p class="mt-1 text-xs text-red-500">Password must be at least 8 characters.</p>
+          }
         </div>
 
         <!-- Confirm Password -->
@@ -107,7 +116,7 @@
               [type]="showConfirm() ? 'text' : 'password'"
               formControlName="confirmPassword"
               class="input-base pr-10"
-                            placeholder="Repeat your password"
+              placeholder="Repeat your password"
               autocomplete="new-password"
             />
             <button type="button" (click)="showConfirm.set(!showConfirm())"
@@ -126,13 +135,16 @@
               }
             </button>
           </div>
+          @if (passwordMismatch) {
+            <p class="mt-1 text-xs text-red-500">Passwords do not match.</p>
+          }
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
-          class="btn-primary w-full py-2.5 flex items-center justify-center gap-2 mt-2"
-          [disabled]="loading() || form.invalid"
+          class="btn-primary w-full py-2.5 flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="loading()"
         >
           @if (loading()) {
             <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

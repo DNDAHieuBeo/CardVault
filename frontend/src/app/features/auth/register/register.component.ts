@@ -43,7 +43,10 @@ export class RegisterComponent {
       this.errorMessage.set('Passwords do not match.');
       return;
     }
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.loading.set(true);
     this.errorMessage.set('');

@@ -101,6 +101,13 @@ export class CardBrowserComponent implements OnInit {
     this.search();
   }
 
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  onTextInput(): void {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.search(), 400);
+  }
+
   search(): void {
     this.loadCards(1);
   }

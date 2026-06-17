@@ -36,11 +36,11 @@
     <div class="grid grid-cols-[auto_1fr_auto_1fr] gap-x-3 gap-y-2 items-center">
 
       <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Name:</label>
-      <input [(ngModel)]="filterName" (keyup.enter)="search()"
+      <input [(ngModel)]="filterName" (input)="onTextInput()"
              placeholder="Card name..." class="input-base text-xs py-1.5" />
 
       <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Desc:</label>
-      <input [(ngModel)]="filterDesc" (keyup.enter)="search()"
+      <input [(ngModel)]="filterDesc" (input)="onTextInput()"
              placeholder="Text in description..." class="input-base text-xs py-1.5" />
 
       <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Card:</label>
