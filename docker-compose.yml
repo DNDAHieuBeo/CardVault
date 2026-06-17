@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cardvault
+      POSTGRES_USER: cardvault
+      POSTGRES_PASSWORD: cardvault_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardvault -d cardvault"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5252:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=cardvault;Username=cardvault;Password=cardvault_pass
+      - JwtSettings__SecretKey=CardVaultSuperSecretKey2026MustBe32CharsLong!
+      - JwtSettings__Issuer=CardVaultAPI
+      - JwtSettings__Audience=CardVaultClient
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
