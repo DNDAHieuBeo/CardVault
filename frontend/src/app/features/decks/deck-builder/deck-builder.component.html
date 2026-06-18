@@ -26,12 +26,10 @@
         @if (validationErrors().length > 0) {
           <span class="text-xs text-amber-400">⚠ {{ validationErrors().length }} issues</span>
         }
-        <button (click)="validate()" class="px-3 py-1.5 text-xs rounded transition-colors"
-                style="background-color: var(--color-surface-2); color: var(--color-text)">
+        <button appBtn variant="secondary" (click)="validate()" class="px-3 py-1.5 text-xs">
           Validate
         </button>
-        <button (click)="save()" [disabled]="saving()"
-                class="btn-primary flex items-center gap-2 px-4 py-1.5 text-sm">
+        <button appBtn [disabled]="saving()" (click)="save()" class="flex items-center gap-2 px-4 py-1.5 text-sm">
           @if (saving()) {
             <svg class="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -60,151 +58,53 @@
       <!-- LEFT: Deck editor -->
       <div class="flex-1 overflow-y-auto p-4 space-y-4">
 
-        <!-- Main Deck -->
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="text-sm font-bold" style="color: var(--color-text)">Main Deck</h3>
-            <span class="text-xs px-1.5 py-0.5 rounded font-medium"
-                  [class]="mainCount() < 40 ? 'bg-amber-900/30 text-amber-400' :
-                            mainCount() > 60 ? 'bg-red-900/30 text-red-400' :
-                            'bg-green-900/30 text-green-400'">
-              {{ mainCount() }} / 40–60
-            </span>
-          </div>
-          <div class="min-h-20 rounded-lg border-2 transition-colors p-1"
-               [class]="dragOverZone === 'main'
-                 ? 'border-blue-500 bg-blue-500/5'
-                 : mainDeck().length === 0 ? 'border-dashed border-[var(--color-border)]' : 'border-transparent'"
-               (dragover)="onDragOver($event, 'main')"
-               (dragleave)="onDragLeave($event, 'main')"
-               (drop)="onDrop($event, 'main')">
-            @if (mainDeck().length === 0) {
-              <div class="h-16 flex items-center justify-center text-xs" style="color: var(--color-text-muted)">
-                Drag cards here
-              </div>
-            } @else {
-              <div class="flex flex-wrap gap-1">
-                @for (card of mainDeck(); track $index) {
-                  <div class="relative group w-16 rounded overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                       draggable="true"
-                       (dragstart)="onDeckDragStart($event, card, 'main', $index)"
-                       (dragend)="onDragEnd()"
-                       [title]="card.name">
-                    @if (card.imageUrlSmall) {
-                      <img [src]="card.imageUrlSmall" [alt]="card.name"
-                           class="w-full aspect-[59/86] object-cover pointer-events-none" loading="lazy" />
-                    } @else {
-                      <div class="w-full aspect-[59/86] bg-gray-700 flex items-center justify-center text-xs pointer-events-none">🃏</div>
-                    }
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity
-                                flex items-center justify-center pointer-events-none">
-                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        <app-deck-zone
+          title="Main Deck"
+          [cards]="mainDeck()"
+          [count]="mainCount()"
+          maxLabel="40–60"
+          [badgeClass]="mainCount() < 40 ? 'bg-amber-900/30 text-amber-400' :
+                        mainCount() > 60 ? 'bg-red-900/30 text-red-400' :
+                        'bg-green-900/30 text-green-400'"
+          emptyText="Drag cards here"
+          [large]="true"
+          [isDragOver]="dragOverZone === 'main'"
+          (zoneDragOver)="onDragOver($event, 'main')"
+          (zoneDragLeave)="onDragLeave($event, 'main')"
+          (zoneDrop)="onDrop($event, 'main')"
+          (cardDragStart)="onDeckDragStart($event.event, $event.card, 'main', $event.index)"
+          (cardDragEnd)="onDragEnd()"
+        />
 
-        <!-- Extra Deck -->
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="text-sm font-bold" style="color: var(--color-text)">Extra Deck</h3>
-            <span class="text-xs px-1.5 py-0.5 rounded font-medium"
-                  [class]="extraCount() > 15 ? 'bg-red-900/30 text-red-400' : 'bg-blue-900/30 text-blue-400'">
-              {{ extraCount() }} / 15
-            </span>
-          </div>
-          <div class="min-h-12 rounded-lg border-2 transition-colors p-1"
-               [class]="dragOverZone === 'extra'
-                 ? 'border-blue-500 bg-blue-500/5'
-                 : extraDeck().length === 0 ? 'border-dashed border-[var(--color-border)]' : 'border-transparent'"
-               (dragover)="onDragOver($event, 'extra')"
-               (dragleave)="onDragLeave($event, 'extra')"
-               (drop)="onDrop($event, 'extra')">
-            @if (extraDeck().length === 0) {
-              <div class="h-10 flex items-center justify-center text-xs" style="color: var(--color-text-muted)">
-                Fusion / Synchro / XYZ / Link — drag here
-              </div>
-            } @else {
-              <div class="flex flex-wrap gap-1">
-                @for (card of extraDeck(); track $index) {
-                  <div class="relative group w-16 rounded overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                       draggable="true"
-                       (dragstart)="onDeckDragStart($event, card, 'extra', $index)"
-                       (dragend)="onDragEnd()"
-                       [title]="card.name">
-                    @if (card.imageUrlSmall) {
-                      <img [src]="card.imageUrlSmall" [alt]="card.name"
-                           class="w-full aspect-[59/86] object-cover pointer-events-none" loading="lazy" />
-                    } @else {
-                      <div class="w-full aspect-[59/86] bg-gray-700 flex items-center justify-center text-xs pointer-events-none">🃏</div>
-                    }
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity
-                                flex items-center justify-center pointer-events-none">
-                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        <app-deck-zone
+          title="Extra Deck"
+          [cards]="extraDeck()"
+          [count]="extraCount()"
+          maxLabel="15"
+          [badgeClass]="extraCount() > 15 ? 'bg-red-900/30 text-red-400' : 'bg-blue-900/30 text-blue-400'"
+          emptyText="Fusion / Synchro / XYZ / Link — drag here"
+          [isDragOver]="dragOverZone === 'extra'"
+          (zoneDragOver)="onDragOver($event, 'extra')"
+          (zoneDragLeave)="onDragLeave($event, 'extra')"
+          (zoneDrop)="onDrop($event, 'extra')"
+          (cardDragStart)="onDeckDragStart($event.event, $event.card, 'extra', $event.index)"
+          (cardDragEnd)="onDragEnd()"
+        />
 
-        <!-- Side Deck -->
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="text-sm font-bold" style="color: var(--color-text)">Side Deck</h3>
-            <span class="text-xs px-1.5 py-0.5 rounded font-medium"
-                  [class]="sideCount() > 15 ? 'bg-red-900/30 text-red-400' : 'bg-gray-700 text-gray-400'">
-              {{ sideCount() }} / 15
-            </span>
-          </div>
-          <div class="min-h-12 rounded-lg border-2 transition-colors p-1"
-               [class]="dragOverZone === 'side'
-                 ? 'border-blue-500 bg-blue-500/5'
-                 : sideDeck().length === 0 ? 'border-dashed border-[var(--color-border)]' : 'border-transparent'"
-               (dragover)="onDragOver($event, 'side')"
-               (dragleave)="onDragLeave($event, 'side')"
-               (drop)="onDrop($event, 'side')">
-            @if (sideDeck().length === 0) {
-              <div class="h-10 flex items-center justify-center text-xs" style="color: var(--color-text-muted)">
-                Side deck — drag here (optional)
-              </div>
-            } @else {
-              <div class="flex flex-wrap gap-1">
-                @for (card of sideDeck(); track $index) {
-                  <div class="relative group w-16 rounded overflow-hidden cursor-grab active:cursor-grabbing select-none"
-                       draggable="true"
-                       (dragstart)="onDeckDragStart($event, card, 'side', $index)"
-                       (dragend)="onDragEnd()"
-                       [title]="card.name">
-                    @if (card.imageUrlSmall) {
-                      <img [src]="card.imageUrlSmall" [alt]="card.name"
-                           class="w-full aspect-[59/86] object-cover pointer-events-none" loading="lazy" />
-                    } @else {
-                      <div class="w-full aspect-[59/86] bg-gray-700 flex items-center justify-center text-xs pointer-events-none">🃏</div>
-                    }
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity
-                                flex items-center justify-center pointer-events-none">
-                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        <app-deck-zone
+          title="Side Deck"
+          [cards]="sideDeck()"
+          [count]="sideCount()"
+          maxLabel="15"
+          [badgeClass]="sideCount() > 15 ? 'bg-red-900/30 text-red-400' : 'bg-gray-700 text-gray-400'"
+          emptyText="Side deck — drag here (optional)"
+          [isDragOver]="dragOverZone === 'side'"
+          (zoneDragOver)="onDragOver($event, 'side')"
+          (zoneDragLeave)="onDragLeave($event, 'side')"
+          (zoneDrop)="onDrop($event, 'side')"
+          (cardDragStart)="onDeckDragStart($event.event, $event.card, 'side', $event.index)"
+          (cardDragEnd)="onDragEnd()"
+        />
 
       </div>
 

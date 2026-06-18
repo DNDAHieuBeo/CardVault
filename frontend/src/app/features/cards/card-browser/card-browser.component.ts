@@ -5,43 +5,17 @@ import { Card, CardFilter, PagedResult } from '../../../core/models/card.model';
 import { CardThumbnailComponent } from '../../../shared/components/card-thumbnail/card-thumbnail.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { CardDetailPanelComponent } from '../../../shared/components/card-detail-panel/card-detail-panel.component';
-
-const MONSTER_RACES = [
-  'Aqua', 'Beast', 'Beast-Warrior', 'Cyberse', 'Dinosaur', 'Divine-Beast',
-  'Dragon', 'Fairy', 'Fiend', 'Fish', 'Illusion', 'Insect', 'Machine',
-  'Plant', 'Psychic', 'Pyro', 'Reptile', 'Rock', 'Sea Serpent',
-  'Spellcaster', 'Thunder', 'Warrior', 'Winged Beast', 'Wyrm', 'Zombie',
-];
-const SPELL_RACES = ['Normal', 'Quick-Play', 'Continuous', 'Equip', 'Field', 'Ritual'];
-const TRAP_RACES  = ['Normal', 'Continuous', 'Counter'];
-
-const MONSTER_TYPES = [
-  'Normal Monster', 'Effect Monster', 'Flip Effect Monster', 'Toon Monster',
-  'Union Effect Monster', 'Gemini Monster', 'Spirit Monster', 'Tuner Monster',
-  'Pendulum Normal Monster', 'Pendulum Effect Monster',
-  'Ritual Monster', 'Ritual Effect Monster',
-  'Fusion Monster', 'Pendulum Effect Fusion Monster',
-  'Synchro Monster', 'Synchro Tuner Monster', 'Synchro Pendulum Effect Monster',
-  'XYZ Monster', 'XYZ Pendulum Effect Monster',
-  'Link Monster',
-];
-const SPELL_TYPES = ['Spell Card'];
-const TRAP_TYPES  = ['Trap Card'];
-
-const ATTRIBUTES = ['DARK', 'LIGHT', 'EARTH', 'WATER', 'FIRE', 'WIND', 'DIVINE'];
-const LEVELS = [1,2,3,4,5,6,7,8,9,10,11,12];
-const BAN_STATUS = ['Forbidden', 'Limited', 'Semi-Limited'];
-const ORDER_OPTIONS = [
-  { value: 'name',  label: 'Name (A–Z)' },
-  { value: 'atk',   label: 'ATK (High)' },
-  { value: 'def',   label: 'DEF (High)' },
-  { value: 'level', label: 'Level (High)' },
-];
+import {
+  MONSTER_RACES, SPELL_RACES, TRAP_RACES,
+  MONSTER_TYPES, SPELL_TYPES, TRAP_TYPES,
+  ATTRIBUTES, LEVELS, BAN_STATUS, ORDER_OPTIONS,
+} from './card-browser.constants';
+import { BtnComponent } from '../../../shared/components/common/button/btn.component';
 
 @Component({
   selector: 'app-card-browser',
   standalone: true,
-  imports: [FormsModule, CardThumbnailComponent, PaginationComponent, CardDetailPanelComponent],
+  imports: [FormsModule, CardThumbnailComponent, PaginationComponent, CardDetailPanelComponent, BtnComponent],
   templateUrl: './card-browser.component.html',
 })
 export class CardBrowserComponent implements OnInit {

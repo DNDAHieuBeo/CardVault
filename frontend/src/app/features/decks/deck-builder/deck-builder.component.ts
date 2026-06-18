@@ -7,11 +7,13 @@ import { DeckDetail } from '../../../core/models/deck.model';
 import { Card, PagedResult } from '../../../core/models/card.model';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { isExtraTypeCard } from '../../../core/utils/card.utils';
+import { DeckZoneComponent } from './deck-zone.component';
+import { BtnComponent } from '../../../shared/components/common/button/btn.component';
 
 @Component({
   selector: 'app-deck-builder',
   standalone: true,
-  imports: [FormsModule, RouterLink, PaginationComponent],
+  imports: [FormsModule, RouterLink, PaginationComponent, DeckZoneComponent, BtnComponent],
   templateUrl: './deck-builder.component.html',
 })
 export class DeckBuilderComponent implements OnInit {

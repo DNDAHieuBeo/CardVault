@@ -15,8 +15,8 @@
         {{ syncMessage() }}
       </span>
     }
-    <button (click)="syncCards()" [disabled]="syncing()"
-            class="btn-primary flex items-center gap-2 px-4 py-2 text-sm shrink-0">
+    <button appBtn [disabled]="syncing()" (click)="syncCards()"
+            class="flex items-center gap-2 px-4 py-2 text-sm shrink-0">
       @if (syncing()) {
         <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -127,11 +127,10 @@
 
       <span></span>
       <div class="flex gap-2">
-        <button (click)="reset()" class="px-4 py-1.5 rounded text-xs font-medium transition-colors"
-                style="background-color: var(--color-surface-2); color: var(--color-text-muted)">
+        <button appBtn variant="secondary" (click)="reset()" class="px-4 py-1.5 text-xs font-medium">
           Reset
         </button>
-        <button (click)="search()" class="btn-primary px-6 py-1.5 text-xs font-semibold">
+        <button appBtn (click)="search()" class="px-6 py-1.5 text-xs font-semibold">
           Search
         </button>
       </div>
@@ -164,9 +163,8 @@
         <p class="font-medium" style="color: var(--color-text)">No cards found</p>
         <p class="text-sm" style="color: var(--color-text-muted)">Try adjusting your filters or sync card data first</p>
         <div class="flex gap-3">
-          <button (click)="reset()" class="px-4 py-2 text-sm rounded"
-                  style="background-color: var(--color-surface-2); color: var(--color-text)">Reset Filters</button>
-          <button (click)="syncCards()" [disabled]="syncing()" class="btn-primary px-4 py-2 text-sm">
+          <button appBtn variant="secondary" (click)="reset()" class="px-4 py-2 text-sm">Reset Filters</button>
+          <button appBtn [disabled]="syncing()" (click)="syncCards()" class="px-4 py-2 text-sm">
             Sync from YGOProDeck
           </button>
         </div>

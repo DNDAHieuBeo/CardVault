@@ -2,6 +2,8 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DuelService } from '../../../core/services/duel.service';
 import { Duel, LPLogEntry } from '../../../core/models/duel.model';
+import { PlayerPanelComponent } from './player-panel.component';
+import { BtnComponent } from '../../../shared/components/common/button/btn.component';
 
 interface LocalLPLog {
   playerNumber: 1 | 2;
@@ -13,7 +15,7 @@ interface LocalLPLog {
 @Component({
   selector: 'app-score-board',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, PlayerPanelComponent, BtnComponent],
   templateUrl: './score-board.component.html',
 })
 export class ScoreBoardComponent {

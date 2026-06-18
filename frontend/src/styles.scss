@@ -59,6 +59,20 @@ body {
     &:hover { background-color: var(--color-primary-hover); }
   }
 
+  .btn-secondary {
+    @apply rounded-lg font-medium transition-colors duration-150 focus:outline-none;
+    background-color: var(--color-surface-2);
+    color: var(--color-text);
+
+    &:hover { filter: brightness(0.92); }
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white rounded-lg font-medium transition-colors duration-150 focus:outline-none;
+
+    &:hover { @apply bg-red-700; }
+  }
+
   .card-surface {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);

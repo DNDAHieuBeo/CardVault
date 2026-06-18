@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { CollectionService } from '../../../core/services/collection.service';
 import { UserCard } from '../../../core/models/collection.model';
 import { isMonsterCard } from '../../../core/utils/card.utils';
+import { BtnComponent } from '../../../shared/components/common/button/btn.component';
 
 @Component({
   selector: 'app-my-collection',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, BtnComponent],
   templateUrl: './my-collection.component.html',
 })
 export class MyCollectionComponent implements OnInit {
@@ -16,12 +17,17 @@ export class MyCollectionComponent implements OnInit {
 
   cards = signal<UserCard[]>([]);
   loading = signal(true);
-  searchName = '';
+  searchInput = '';
+  searchTerm = signal('');
 
   filtered = computed(() => {
-    const q = this.searchName.toLowerCase();
+    const q = this.searchTerm().toLowerCase();
     return q ? this.cards().filter(c => c.card.name.toLowerCase().includes(q)) : this.cards();
   });
+
+  search(): void {
+    this.searchTerm.set(this.searchInput);
+  }
 
   totalCards = computed(() => this.cards().reduce((s, c) => s + c.quantity, 0));
 

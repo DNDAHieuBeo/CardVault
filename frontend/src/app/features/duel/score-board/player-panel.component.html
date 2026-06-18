@@ -1,0 +1,45 @@
+<div class="card-surface p-5 space-y-3">
+  <div>
+    <p class="text-xs uppercase tracking-widest font-semibold" style="color: var(--color-text-muted)">{{ playerLabel() }}</p>
+    <p class="text-lg font-bold truncate" style="color: var(--color-text)">{{ playerName() }}</p>
+  </div>
+
+  <!-- LP bar -->
+  <div>
+    <div class="flex items-end gap-2 mb-1">
+      <span class="text-3xl font-black tabular-nums" [style.color]="lpColor(pct())">
+        {{ lp().toLocaleString() }}
+      </span>
+      <span class="text-xs mb-1" style="color: var(--color-text-muted)">LP</span>
+    </div>
+    <div class="h-2 rounded-full overflow-hidden" style="background-color: var(--color-surface-2)">
+      <div class="h-full rounded-full transition-all duration-500"
+           [style.width.%]="pct()" [style.background-color]="lpColor(pct())"></div>
+    </div>
+  </div>
+
+  @if (isActive()) {
+    <!-- Quick LP buttons -->
+    <div class="grid grid-cols-3 gap-1 text-xs">
+      @for (delta of deltas; track delta) {
+        <button (click)="adjust.emit(delta)"
+                class="py-1.5 rounded font-medium transition-colors"
+                [class]="deltaClass(delta)">
+          {{ formatDelta(delta) }}
+        </button>
+      }
+    </div>
+
+    <!-- Custom LP -->
+    <div class="flex gap-2">
+      <input [ngModel]="customLp()" (ngModelChange)="customLpChange.emit($event)"
+             (keyup.enter)="apply.emit()"
+             type="number" placeholder="Set LP" class="input-base text-sm flex-1 text-center" />
+      <button (click)="apply.emit()"
+              class="px-3 py-1.5 text-xs font-medium rounded transition-colors"
+              style="background-color: var(--color-surface-2); color: var(--color-text)">
+        Set
+      </button>
+    </div>
+  }
+</div>
