@@ -1,0 +1,75 @@
+@if (visible()) {
+  <!-- Backdrop -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+       style="background: rgba(0,0,0,0.5); backdrop-filter: blur(2px)"
+       (click)="onBackdrop()">
+
+    <!-- Panel -->
+    <div class="w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-4"
+         style="background-color: var(--color-surface); border: 1px solid var(--color-border)"
+         (click)="$event.stopPropagation()">
+
+      <!-- Title -->
+      <h3 class="text-base font-semibold" style="color: var(--color-text)">{{ title() }}</h3>
+
+      <!-- Message -->
+      @if (message()) {
+        <p class="text-sm" style="color: var(--color-text-muted)">{{ message() }}</p>
+      }
+
+      <!-- Optional text input -->
+      @if (inputPlaceholder()) {
+        <div>
+          @if (inputLabel()) {
+            <label class="block text-sm font-medium mb-1" style="color: var(--color-text)">
+              {{ inputLabel() }}
+            </label>
+          }
+          <input
+            type="text"
+            class="input-base"
+            [placeholder]="inputPlaceholder()"
+            [value]="inputValue()"
+            (input)="inputValue.set($any($event.target).value); inputError.set('')"
+            (keyup.enter)="onConfirm()"
+            autofocus
+          />
+          @if (inputError()) {
+            <p class="text-xs mt-1 text-red-500">{{ inputError() }}</p>
+          }
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="flex gap-3 justify-end pt-1">
+        <button
+          type="button"
+          class="btn-secondary px-4 py-2 text-sm"
+          [disabled]="loading()"
+          (click)="onCancel()"
+        >
+          {{ cancelLabel() }}
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 text-sm rounded-lg font-medium transition-colors focus:outline-none flex items-center gap-2"
+          [class.bg-red-600]="confirmDanger()"
+          [class.hover:bg-red-700]="confirmDanger()"
+          [class.btn-primary]="!confirmDanger()"
+          [class.text-white]="confirmDanger()"
+          [disabled]="loading()"
+          (click)="onConfirm()"
+        >
+          @if (loading()) {
+            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          }
+          {{ confirmLabel() }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

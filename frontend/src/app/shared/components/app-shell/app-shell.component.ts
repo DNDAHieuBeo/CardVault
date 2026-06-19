@@ -1,13 +1,14 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { Router } from '@angular/router';
+import { DialogComponent } from '../common/dialog/dialog.component';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, DialogComponent],
   templateUrl: './app-shell.component.html',
   styles: [`
     .nav-link {
@@ -37,12 +38,19 @@ export class AppShellComponent {
   readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
+  readonly logoutDialog = viewChild.required<DialogComponent>('logoutDialog');
+
   readonly userInitial = () => {
     const name = this.authService.currentUser()?.username ?? '';
     return name.charAt(0).toUpperCase();
   };
 
-  logout(): void {
+  askLogout(): void {
+    this.logoutDialog().open();
+  }
+
+  confirmLogout(): void {
+    this.logoutDialog().close();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
