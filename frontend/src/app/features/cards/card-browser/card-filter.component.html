@@ -1,0 +1,163 @@
+<!-- Search bar + filter toggle -->
+<div class="px-6 py-3 border-b flex items-center gap-2" style="border-color: var(--color-border)">
+
+  <!-- Search input -->
+  <div class="relative flex-1">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+         style="color: var(--color-text-muted)">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input
+      [(ngModel)]="filterName"
+      (input)="onTextInput()"
+      (keyup.enter)="emit()"
+      placeholder="Search card name..."
+      class="input-base pl-9 pr-4 text-sm"
+    />
+  </div>
+
+  <!-- Filter toggle -->
+  <button
+    (click)="showFilters.set(!showFilters())"
+    class="relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0"
+    [style.background-color]="showFilters() ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'var(--color-surface)'"
+    [style.color]="showFilters() ? 'var(--color-primary)' : 'var(--color-text-muted)'"
+    [style.border]="'1px solid ' + (showFilters() ? 'var(--color-primary)' : 'var(--color-border)')"
+  >
+    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+    </svg>
+    Filters
+    @if (hasActiveFilters) {
+      <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--color-primary)]"></span>
+    }
+  </button>
+
+  <!-- Clear button -->
+  @if (hasAny) {
+    <button appBtn variant="secondary" (click)="clear()"
+            class="px-3 py-2 text-xs shrink-0 flex items-center gap-1.5">
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      Clear
+    </button>
+  }
+</div>
+
+<!-- Advanced filter panel -->
+@if (showFilters()) {
+  <div class="px-6 py-4 border-b" style="border-color: var(--color-border); background-color: var(--color-surface)">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Description</label>
+        <input [(ngModel)]="filterDesc" (input)="onTextInput()"
+               placeholder="Text in description..." class="input-base text-xs py-1.5"/>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Card type</label>
+        <select [(ngModel)]="filterCategory" (change)="onCategoryChange()" class="input-base text-xs py-1.5">
+          <option value="">All</option>
+          <option value="Monster">Monster</option>
+          <option value="Spell">Spell</option>
+          <option value="Trap">Trap</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Sub-type</label>
+        <select [(ngModel)]="filterType" (change)="emit()" class="input-base text-xs py-1.5">
+          <option value="">All Types</option>
+          @if (!filterCategory || filterCategory === 'Monster') {
+            <optgroup label="── Monster ──">
+              @for (t of monsterTypes; track t) { <option [value]="t">{{ t }}</option> }
+            </optgroup>
+          }
+          @if (!filterCategory || filterCategory === 'Spell') {
+            <optgroup label="── Spell ──">
+              @for (t of spellTypes; track t) { <option [value]="t">{{ t }}</option> }
+            </optgroup>
+          }
+          @if (!filterCategory || filterCategory === 'Trap') {
+            <optgroup label="── Trap ──">
+              @for (t of trapTypes; track t) { <option [value]="t">{{ t }}</option> }
+            </optgroup>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Race</label>
+        <select [(ngModel)]="filterRace" (change)="emit()" class="input-base text-xs py-1.5">
+          <option value="">All</option>
+          @for (r of availableRaces; track r) { <option [value]="r">{{ r }}</option> }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Attribute</label>
+        <select [(ngModel)]="filterAttribute" (change)="emit()" class="input-base text-xs py-1.5"
+                [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'">
+          <option value="">All</option>
+          @for (a of attributes; track a) { <option [value]="a">{{ a }}</option> }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Level / Rank</label>
+        <select [(ngModel)]="filterLevel" (change)="emit()" class="input-base text-xs py-1.5"
+                [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'">
+          <option value="">Any</option>
+          @for (l of levels; track l) { <option [value]="l">{{ l }}</option> }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Ban list</label>
+        <select [(ngModel)]="filterBan" (change)="emit()" class="input-base text-xs py-1.5">
+          <option value="">All</option>
+          <option value="Unlimited">Unlimited</option>
+          @for (b of banStatuses; track b) { <option [value]="b">{{ b }}</option> }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">Sort by</label>
+        <select [(ngModel)]="filterOrder" (change)="emit()" class="input-base text-xs py-1.5">
+          @for (o of orderOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">ATK</label>
+        <div class="flex items-center gap-1.5">
+          <input [(ngModel)]="filterMinAtk" (keyup.enter)="emit()" type="number" min="0"
+                 placeholder="min" class="input-base text-xs py-1.5 text-center"
+                 [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'"/>
+          <span class="text-xs shrink-0" style="color: var(--color-text-muted)">–</span>
+          <input [(ngModel)]="filterMaxAtk" (keyup.enter)="emit()" type="number" min="0"
+                 placeholder="max" class="input-base text-xs py-1.5 text-center"
+                 [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'"/>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium mb-1" style="color: var(--color-text-muted)">DEF</label>
+        <div class="flex items-center gap-1.5">
+          <input [(ngModel)]="filterMinDef" (keyup.enter)="emit()" type="number" min="0"
+                 placeholder="min" class="input-base text-xs py-1.5 text-center"
+                 [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'"/>
+          <span class="text-xs shrink-0" style="color: var(--color-text-muted)">–</span>
+          <input [(ngModel)]="filterMaxDef" (keyup.enter)="emit()" type="number" min="0"
+                 placeholder="max" class="input-base text-xs py-1.5 text-center"
+                 [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'"/>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

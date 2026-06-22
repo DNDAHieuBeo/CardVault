@@ -24,8 +24,10 @@ export const ATTRIBUTES = ['DARK', 'LIGHT', 'EARTH', 'WATER', 'FIRE', 'WIND', 'D
 export const LEVELS = [1,2,3,4,5,6,7,8,9,10,11,12];
 export const BAN_STATUS = ['Forbidden', 'Limited', 'Semi-Limited'];
 export const ORDER_OPTIONS = [
-  { value: 'name',  label: 'Name (A–Z)' },
-  { value: 'atk',   label: 'ATK (High)' },
-  { value: 'def',   label: 'DEF (High)' },
-  { value: 'level', label: 'Level (High)' },
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'name',   label: 'Name (A–Z)' },
+  { value: 'atk',    label: 'ATK (High)' },
+  { value: 'def',    label: 'DEF (High)' },
+  { value: 'level',  label: 'Level (High)' },
 ];

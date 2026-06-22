@@ -59,10 +59,12 @@ public class CardService(
 
         IQueryable<Card> ordered = filter.OrderBy switch
         {
-            "atk"   => query.OrderByDescending(c => c.Atk),
-            "def"   => query.OrderByDescending(c => c.Def),
-            "level" => query.OrderByDescending(c => c.Level),
-            _       => query.OrderBy(c => c.Name)
+            "atk"    => query.OrderByDescending(c => c.Atk),
+            "def"    => query.OrderByDescending(c => c.Def),
+            "level"  => query.OrderByDescending(c => c.Level),
+            "name"   => query.OrderBy(c => c.Name),
+            "oldest" => query.OrderBy(c => c.Id),
+            _        => query.OrderByDescending(c => c.Id)  // "newest" + default
         };
 
         var items = await ordered

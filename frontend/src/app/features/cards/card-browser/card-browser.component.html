@@ -31,111 +31,8 @@
     </button>
   </div>
 
-  <!-- Filter panel -->
-  <div class="px-6 py-3 border-b" style="border-color: var(--color-border)">
-    <div class="grid grid-cols-[auto_1fr_auto_1fr] gap-x-3 gap-y-2 items-center">
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Name:</label>
-      <input [(ngModel)]="filterName" (input)="onTextInput()"
-             placeholder="Card name..." class="input-base text-xs py-1.5" />
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Desc:</label>
-      <input [(ngModel)]="filterDesc" (input)="onTextInput()"
-             placeholder="Text in description..." class="input-base text-xs py-1.5" />
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Card:</label>
-      <select [(ngModel)]="filterCategory" (change)="onCategoryChange()" class="input-base text-xs py-1.5">
-        <option value="">All</option>
-        <option value="Monster">Monster</option>
-        <option value="Spell">Spell</option>
-        <option value="Trap">Trap</option>
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Type:</label>
-      <select [(ngModel)]="filterType" (change)="search()" class="input-base text-xs py-1.5">
-        <option value="">All Types</option>
-        @if (!filterCategory || filterCategory === 'Monster') {
-          <optgroup label="── Monster ──">
-            @for (t of monsterTypes; track t) { <option [value]="t">{{ t }}</option> }
-          </optgroup>
-        }
-        @if (!filterCategory || filterCategory === 'Spell') {
-          <optgroup label="── Spell ──">
-            @for (t of spellTypes; track t) { <option [value]="t">{{ t }}</option> }
-          </optgroup>
-        }
-        @if (!filterCategory || filterCategory === 'Trap') {
-          <optgroup label="── Trap ──">
-            @for (t of trapTypes; track t) { <option [value]="t">{{ t }}</option> }
-          </optgroup>
-        }
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Race:</label>
-      <select [(ngModel)]="filterRace" (change)="search()" class="input-base text-xs py-1.5">
-        <option value="">All</option>
-        @for (r of availableRaces; track r) { <option [value]="r">{{ r }}</option> }
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Attrib:</label>
-      <select [(ngModel)]="filterAttribute" (change)="search()" class="input-base text-xs py-1.5"
-              [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'">
-        <option value="">All</option>
-        @for (a of attributes; track a) { <option [value]="a">{{ a }}</option> }
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Level:</label>
-      <select [(ngModel)]="filterLevel" (change)="search()" class="input-base text-xs py-1.5"
-              [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'">
-        <option value="">Any</option>
-        @for (l of levels; track l) { <option [value]="l">{{ l }}</option> }
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Limit:</label>
-      <select [(ngModel)]="filterBan" (change)="search()" class="input-base text-xs py-1.5">
-        <option value="">All</option>
-        <option value="Unlimited">Unlimited</option>
-        @for (b of banStatuses; track b) { <option [value]="b">{{ b }}</option> }
-      </select>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">ATK:</label>
-      <div class="flex items-center gap-1.5">
-        <input [(ngModel)]="filterMinAtk" (keyup.enter)="search()" type="number" min="0"
-               placeholder="min" class="input-base text-xs py-1.5 w-24 text-center"
-               [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'" />
-        <span class="text-xs shrink-0" style="color: var(--color-text-muted)">–</span>
-        <input [(ngModel)]="filterMaxAtk" (keyup.enter)="search()" type="number" min="0"
-               placeholder="max" class="input-base text-xs py-1.5 w-24 text-center"
-               [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'" />
-      </div>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">DEF:</label>
-      <div class="flex items-center gap-1.5">
-        <input [(ngModel)]="filterMinDef" (keyup.enter)="search()" type="number" min="0"
-               placeholder="min" class="input-base text-xs py-1.5 w-24 text-center"
-               [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'" />
-        <span class="text-xs shrink-0" style="color: var(--color-text-muted)">–</span>
-        <input [(ngModel)]="filterMaxDef" (keyup.enter)="search()" type="number" min="0"
-               placeholder="max" class="input-base text-xs py-1.5 w-24 text-center"
-               [disabled]="filterCategory === 'Spell' || filterCategory === 'Trap'" />
-      </div>
-
-      <label class="text-xs font-semibold text-right" style="color: var(--color-text-muted)">Order:</label>
-      <select [(ngModel)]="filterOrder" (change)="search()" class="input-base text-xs py-1.5">
-        @for (o of orderOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
-      </select>
-
-      <span></span>
-      <div class="flex gap-2">
-        <button appBtn variant="secondary" (click)="reset()" class="px-4 py-1.5 text-xs font-medium">
-          Reset
-        </button>
-        <button appBtn (click)="search()" class="px-6 py-1.5 text-xs font-semibold">
-          Search
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- Filter -->
+  <app-card-filter (searched)="onFilter($event)" (cleared)="onClear()" />
 
   <!-- Card grid -->
   <div class="flex-1 overflow-y-auto px-6 py-4">
@@ -163,7 +60,6 @@
         <p class="font-medium" style="color: var(--color-text)">No cards found</p>
         <p class="text-sm" style="color: var(--color-text-muted)">Try adjusting your filters or sync card data first</p>
         <div class="flex gap-3">
-          <button appBtn variant="secondary" (click)="reset()" class="px-4 py-2 text-sm">Reset Filters</button>
           <button appBtn [disabled]="syncing()" (click)="syncCards()" class="px-4 py-2 text-sm">
             Sync from YGOProDeck
           </button>

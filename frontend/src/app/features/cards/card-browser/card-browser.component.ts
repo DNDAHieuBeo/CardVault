@@ -1,127 +1,48 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CardService } from '../../../core/services/card.service';
 import { Card, CardFilter, PagedResult } from '../../../core/models/card.model';
 import { CardThumbnailComponent } from '../../../shared/components/card-thumbnail/card-thumbnail.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { CardDetailPanelComponent } from '../../../shared/components/card-detail-panel/card-detail-panel.component';
-import {
-  MONSTER_RACES, SPELL_RACES, TRAP_RACES,
-  MONSTER_TYPES, SPELL_TYPES, TRAP_TYPES,
-  ATTRIBUTES, LEVELS, BAN_STATUS, ORDER_OPTIONS,
-} from './card-browser.constants';
 import { BtnComponent } from '../../../shared/components/common/button/btn.component';
+import { CardFilterComponent, CardFilterState } from './card-filter.component';
 
 @Component({
   selector: 'app-card-browser',
   standalone: true,
-  imports: [FormsModule, CardThumbnailComponent, PaginationComponent, CardDetailPanelComponent, BtnComponent],
+  imports: [CardThumbnailComponent, PaginationComponent, CardDetailPanelComponent, BtnComponent, CardFilterComponent],
   templateUrl: './card-browser.component.html',
 })
 export class CardBrowserComponent implements OnInit {
   private readonly cardService = inject(CardService);
 
-  readonly attributes = ATTRIBUTES;
-  readonly levels = LEVELS;
-  readonly banStatuses = BAN_STATUS;
-  readonly orderOptions = ORDER_OPTIONS;
-  readonly monsterTypes = MONSTER_TYPES;
-  readonly spellTypes = SPELL_TYPES;
-  readonly trapTypes = TRAP_TYPES;
-
-  filterName = '';
-  filterDesc = '';
-  filterCategory = '';
-  filterType = '';
-  filterRace = '';
-  filterAttribute = '';
-  filterLevel = '';
-  filterMinAtk = '';
-  filterMaxAtk = '';
-  filterMinDef = '';
-  filterMaxDef = '';
-  filterBan = '';
-  filterOrder = 'name';
-
-  get availableRaces(): string[] {
-    if (this.filterCategory === 'Monster') return MONSTER_RACES;
-    if (this.filterCategory === 'Spell')   return SPELL_RACES;
-    if (this.filterCategory === 'Trap')    return TRAP_RACES;
-    return [...MONSTER_RACES, ...SPELL_RACES, ...TRAP_RACES].filter((v, i, a) => a.indexOf(v) === i);
-  }
-
-  result = signal<PagedResult<Card> | null>(null);
-  loading = signal(false);
-  syncing = signal(false);
+  result      = signal<PagedResult<Card> | null>(null);
+  loading     = signal(false);
+  syncing     = signal(false);
   syncMessage = signal('');
   currentPage = signal(1);
   selectedCard = signal<Card | null>(null);
+
+  private activeFilter: CardFilterState = {};
 
   ngOnInit(): void {
     this.loadCards();
   }
 
-  onCategoryChange(): void {
-    this.filterType = '';
-    this.filterRace = '';
-    if (this.filterCategory !== 'Monster') {
-      this.filterAttribute = '';
-      this.filterLevel = '';
-      this.filterMinAtk = '';
-      this.filterMaxAtk = '';
-      this.filterMinDef = '';
-      this.filterMaxDef = '';
-    }
-    this.search();
-  }
-
-  private searchTimer: ReturnType<typeof setTimeout> | null = null;
-
-  onTextInput(): void {
-    if (this.searchTimer) clearTimeout(this.searchTimer);
-    this.searchTimer = setTimeout(() => this.search(), 400);
-  }
-
-  search(): void {
+  onFilter(state: CardFilterState): void {
+    this.activeFilter = state;
     this.loadCards(1);
   }
 
-  reset(): void {
-    this.filterName = '';
-    this.filterDesc = '';
-    this.filterCategory = '';
-    this.filterType = '';
-    this.filterRace = '';
-    this.filterAttribute = '';
-    this.filterLevel = '';
-    this.filterMinAtk = '';
-    this.filterMaxAtk = '';
-    this.filterMinDef = '';
-    this.filterMaxDef = '';
-    this.filterBan = '';
-    this.filterOrder = 'name';
+  onClear(): void {
+    this.activeFilter = {};
     this.loadCards(1);
   }
 
   loadCards(page = 1): void {
     this.currentPage.set(page);
     this.loading.set(true);
-    const f: CardFilter = {
-      page, pageSize: 24,
-      name:      this.filterName      || undefined,
-      desc:      this.filterDesc      || undefined,
-      category:  this.filterCategory  || undefined,
-      type:      this.filterType      || undefined,
-      race:      this.filterRace      || undefined,
-      attribute: this.filterAttribute || undefined,
-      level:     this.filterLevel     ? +this.filterLevel  : undefined,
-      minAtk:    this.filterMinAtk    ? +this.filterMinAtk : undefined,
-      maxAtk:    this.filterMaxAtk    ? +this.filterMaxAtk : undefined,
-      minDef:    this.filterMinDef    ? +this.filterMinDef : undefined,
-      maxDef:    this.filterMaxDef    ? +this.filterMaxDef : undefined,
-      banTcg:    this.filterBan       || undefined,
-      orderBy:   this.filterOrder     || undefined,
-    };
+    const f: CardFilter = { page, pageSize: 24, ...this.activeFilter };
     this.cardService.getCards(f).subscribe({
       next: r => { this.result.set(r); this.loading.set(false); },
       error: () => this.loading.set(false),
