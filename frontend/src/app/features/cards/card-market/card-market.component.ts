@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardService } from '../../../core/services/card.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { Card, MarketFilter, PagedResult } from '../../../core/models/card.model';
 import { CardDetailPanelComponent } from '../../../shared/components/card-detail-panel/card-detail-panel.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
@@ -17,11 +18,14 @@ type SortOrder   = 'price_desc' | 'price_asc' | 'name';
 })
 export class CardMarketComponent implements OnInit {
   private readonly cardService = inject(CardService);
+  readonly currency = inject(CurrencyService);
 
   result       = signal<PagedResult<Card> | null>(null);
   loading      = signal(false);
   currentPage  = signal(1);
   selectedCard = signal<Card | null>(null);
+
+  showVnd = false;
 
   // Filters
   filterName     = '';
@@ -45,6 +49,7 @@ export class CardMarketComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.currency.fetchRate();
     this.load(1);
   }
 
@@ -89,6 +94,12 @@ export class CardMarketComponent implements OnInit {
   }
 
   formatPrice(val?: number): string {
+    if (val == null) return '—';
+    if (this.showVnd) return this.currency.toVnd(val);
+    return '$' + val.toFixed(2);
+  }
+
+  formatPriceUsd(val?: number): string {
     if (val == null) return '—';
     return '$' + val.toFixed(2);
   }

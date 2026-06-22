@@ -11,6 +11,31 @@
           </p>
         }
       </div>
+
+      <!-- USD / VND toggle -->
+      @if (currency.rate()) {
+      <div class="flex items-center gap-2 shrink-0">
+          <span class="text-xs" style="color: var(--color-text-muted)">
+            1 USD = {{ currency.toVnd(1) }}
+          </span>
+        <div class="flex rounded-lg overflow-hidden border text-sm font-medium"
+             style="border-color: var(--color-border)">
+          <button type="button" (click)="showVnd = false"
+                  class="px-3 py-1.5 transition-colors"
+                  [style.background-color]="!showVnd ? 'var(--color-primary)' : 'var(--color-surface)'"
+                  [style.color]="!showVnd ? '#fff' : 'var(--color-text-muted)'">
+            USD
+          </button>
+          <button type="button" (click)="showVnd = true"
+                  class="px-3 py-1.5 transition-colors"
+                  [style.background-color]="showVnd ? 'var(--color-primary)' : 'var(--color-surface)'"
+                  [style.color]="showVnd ? '#fff' : 'var(--color-text-muted)'">
+            VND
+          </button>
+        </div>
+      </div>
+      }
+      </div>
     </div>
 
     <!-- Controls row -->
@@ -144,14 +169,26 @@
                 {{ card.name }}
               </p>
 
-              <!-- Featured price (selected source) -->
-              <div class="flex items-baseline gap-1">
-                <span class="text-xl font-bold" style="color: var(--color-primary)">
-                  {{ formatPrice(priceOf(card)) }}
-                </span>
-                <span class="text-xs" style="color: var(--color-text-muted)">
-                  {{ priceSource === 'cardmarket' ? 'CM' : priceSource === 'tcgplayer' ? 'TCG' : priceSource === 'ebay' ? 'eBay' : 'AMZ' }}
-                </span>
+              <!-- Featured price -->
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-xl font-bold" style="color: var(--color-primary)">
+                    {{ formatPrice(priceOf(card)) }}
+                  </span>
+                  <span class="text-xs" style="color: var(--color-text-muted)">
+                    {{ priceSource === 'cardmarket' ? 'CM' : priceSource === 'tcgplayer' ? 'TCG' : priceSource === 'ebay' ? 'eBay' : 'AMZ' }}
+                  </span>
+                </div>
+                <!-- Sub-price (opposite currency) -->
+                @if (currency.rate() && priceOf(card)) {
+                  <p class="text-xs mt-0.5" style="color: var(--color-text-muted)">
+                    @if (showVnd) {
+                      ≈ ${{ priceOf(card)!.toFixed(2) }}
+                    } @else {
+                      ≈ {{ currency.toVnd(priceOf(card)!) }}
+                    }
+                  </p>
+                }
               </div>
 
               <!-- Other prices -->
@@ -159,25 +196,33 @@
                 @if (card.cardmarketPrice && priceSource !== 'cardmarket') {
                   <div class="flex justify-between text-xs">
                     <span style="color: var(--color-text-muted)">Cardmarket</span>
-                    <span class="font-medium" style="color: var(--color-text)">${{ card.cardmarketPrice.toFixed(2) }}</span>
+                    <span class="font-medium" style="color: var(--color-text)">
+                      {{ showVnd ? currency.toVnd(card.cardmarketPrice) : '$' + card.cardmarketPrice.toFixed(2) }}
+                    </span>
                   </div>
                 }
                 @if (card.tcgplayerPrice && priceSource !== 'tcgplayer') {
                   <div class="flex justify-between text-xs">
                     <span style="color: var(--color-text-muted)">TCGPlayer</span>
-                    <span class="font-medium" style="color: var(--color-text)">${{ card.tcgplayerPrice.toFixed(2) }}</span>
+                    <span class="font-medium" style="color: var(--color-text)">
+                      {{ showVnd ? currency.toVnd(card.tcgplayerPrice) : '$' + card.tcgplayerPrice.toFixed(2) }}
+                    </span>
                   </div>
                 }
                 @if (card.ebayPrice && priceSource !== 'ebay') {
                   <div class="flex justify-between text-xs">
                     <span style="color: var(--color-text-muted)">eBay</span>
-                    <span class="font-medium" style="color: var(--color-text)">${{ card.ebayPrice.toFixed(2) }}</span>
+                    <span class="font-medium" style="color: var(--color-text)">
+                      {{ showVnd ? currency.toVnd(card.ebayPrice) : '$' + card.ebayPrice.toFixed(2) }}
+                    </span>
                   </div>
                 }
                 @if (card.amazonPrice && priceSource !== 'amazon') {
                   <div class="flex justify-between text-xs">
                     <span style="color: var(--color-text-muted)">Amazon</span>
-                    <span class="font-medium" style="color: var(--color-text)">${{ card.amazonPrice.toFixed(2) }}</span>
+                    <span class="font-medium" style="color: var(--color-text)">
+                      {{ showVnd ? currency.toVnd(card.amazonPrice) : '$' + card.amazonPrice.toFixed(2) }}
+                    </span>
                   </div>
                 }
               </div>

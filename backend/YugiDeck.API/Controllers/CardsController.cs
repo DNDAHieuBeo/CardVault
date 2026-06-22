@@ -8,8 +8,19 @@ namespace YugiDeck.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class CardsController(ICardService cardService) : ControllerBase
+public class CardsController(ICardService cardService, IHttpClientFactory httpClientFactory) : ControllerBase
 {
+    [HttpGet("exchange-rate")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetExchangeRate()
+    {
+        var client = httpClientFactory.CreateClient();
+        var res = await client.GetAsync("https://api.frankfurter.app/latest?from=USD&to=VND");
+        if (!res.IsSuccessStatusCode) return StatusCode(502, "Exchange rate unavailable");
+        var json = await res.Content.ReadAsStringAsync();
+        return Content(json, "application/json");
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetCards([FromQuery] CardFilterParams filter)
     {
