@@ -72,6 +72,7 @@ builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<IDuelService, DuelService>();
+builder.Services.AddHostedService<CardSyncHostedService>();
 
 // Controllers + Swagger
 builder.Services.AddControllers();
